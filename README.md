@@ -41,6 +41,7 @@ http://localhost:8765/
 
 - [`docs/product.md`](docs/product.md)：产品目标和体验定义
 - [`docs/architecture.md`](docs/architecture.md)：技术架构
+- [`docs/construction-map.md`](docs/construction-map.md)：施工图 / 项目结构图
 - [`docs/ui-reference.md`](docs/ui-reference.md)：UI 参考和复刻要求
 - [`docs/netease-cli.md`](docs/netease-cli.md)：网易云 CLI 接入计划
 - [`docs/roadmap.md`](docs/roadmap.md)：开发路线图
