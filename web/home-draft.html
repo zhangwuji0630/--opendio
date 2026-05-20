@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>opendio Radio Home Draft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Doto:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #09090d;
+    --panel: rgba(34,31,45,.92);
+    --panel-soft: rgba(40,37,53,.82);
+    --panel-dark: rgba(0,0,0,.72);
+    --line: rgba(255,255,255,.075);
+    --text: rgba(245,245,242,.92);
+    --muted: rgba(245,245,242,.38);
+    --live: #29ffb8;
+  }
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #050507;
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  * { box-sizing: border-box; }
+  .stage {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 50% 50%, #11121a 0%, #0a0a10 70%, #07070b 100%);
+  }
+  .glow {
+    position: absolute;
+    inset: auto;
+    width: 74vmin;
+    height: 74vmin;
+    border-radius: 50%;
+    filter: blur(126px) saturate(1.08);
+    opacity: .62;
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+  .glow.blue { background: oklch(0.50 0.18 260); transform: translate(-16vmin,-8vmin); }
+  .glow.violet { background: oklch(0.44 0.20 320); transform: translate(15vmin,14vmin); opacity:.48; }
+  .home-card {
+    position: relative;
+    width: 440px;
+    max-width: calc(100vw - 48px);
+    height: min(780px, calc(100vh - 48px));
+    border-radius: 28px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle, rgba(255,255,255,.075) 1px, transparent 1.25px) 0 0 / 16px 16px,
+      linear-gradient(180deg, rgba(38,35,52,.95), rgba(22,20,31,.97));
+    box-shadow:
+      0 42px 100px rgba(0,0,0,.68),
+      0 0 70px rgba(86,72,190,.24),
+      0 0 0 1px rgba(255,255,255,.08);
+    display: flex;
+    flex-direction: column;
+  }
+  .topbar {
+    height: 70px;
+    flex: 0 0 70px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 0 22px;
+    background: rgba(45,41,60,.78);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.2);
+    flex: 0 0 auto;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; display:block; }
+  .brand-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'Doto', monospace;
+    font-size: 30px;
+    line-height: 1;
+    letter-spacing: -.055em;
+    color: rgba(255,255,255,.92);
+  }
+  .top-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+    font-family: 'Doto', monospace;
+    font-size: 11px;
+    letter-spacing: .06em;
+    white-space: nowrap;
+  }
+  .top-actions a,
+  .top-actions button {
+    height: 28px;
+    border-radius: 999px;
+    padding: 0 11px;
+    border: 1px solid rgba(255,255,255,.1);
+    background: rgba(0,0,0,.16);
+    color: rgba(255,255,255,.45);
+    text-decoration: none;
+    font: inherit;
+    display: inline-grid;
+    place-items: center;
+  }
+  .top-actions button:not(.active) { display: none; }
+  .top-actions .active {
+    background: rgba(245,245,242,.94);
+    color: #111;
+    border-color: rgba(245,245,242,.94);
+  }
+  .hero {
+    height: 186px;
+    flex: 0 0 186px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(circle, rgba(255,255,255,.065) 1px, transparent 1.2px) 0 0/16px 16px,
+      rgba(0,0,0,.72);
+    border-bottom: 1px solid var(--line);
+  }
+  .time {
+    font-family: 'Doto', monospace;
+    font-size: 82px;
+    line-height: .86;
+    letter-spacing: -.09em;
+    color: #f7f7f3;
+  }
+  .weekday {
+    margin-top: 22px;
+    font-size: 16px;
+    font-weight: 700;
+    color: rgba(255,255,255,.78);
+  }
+  .date {
+    margin-top: 8px;
+    font-family: 'Doto', monospace;
+    font-size: 12px;
+    letter-spacing: .1em;
+    color: rgba(255,255,255,.36);
+  }
+  .onair {
+    margin-top: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Doto', monospace;
+    font-size: 12px;
+    letter-spacing: .15em;
+    color: var(--live);
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 99px;
+    background: var(--live);
+    box-shadow: 0 0 12px rgba(41,255,184,.58);
+  }
+  .player-strip {
+    height: 100px;
+    flex: 0 0 100px;
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    grid-template-rows: 1fr 24px;
+    column-gap: 12px;
+    align-items: center;
+    padding: 14px 24px 11px;
+    background: rgba(46,42,59,.76);
+    border-bottom: 1px solid var(--line);
+  }
+  .mini-wave {
+    height: 30px;
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+  }
+  .mini-wave i {
+    width: 3px;
+    border-radius: 2px;
+    background: var(--live);
+    opacity: .9;
+  }
+  .mini-wave i:nth-child(1){height:10px}.mini-wave i:nth-child(2){height:18px}.mini-wave i:nth-child(3){height:8px}.mini-wave i:nth-child(4){height:24px}.mini-wave i:nth-child(5){height:13px}.mini-wave i:nth-child(6){height:6px}
+  .track { min-width: 0; }
+  .track-title {
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: rgba(255,255,255,.9);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .track-status {
+    margin-top: 6px;
+    font-family: 'Doto', monospace;
+    color: rgba(255,255,255,.38);
+    font-size: 11px;
+    letter-spacing: .12em;
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .control {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(0,0,0,.15);
+    color: rgba(255,255,255,.72);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+  .control.text {
+    width: auto;
+    padding: 0 13px;
+    font-family: 'Doto', monospace;
+    font-size: 11px;
+    letter-spacing: .08em;
+  }
+  .progress-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 44px 1fr 44px;
+    gap: 10px;
+    align-items: center;
+    color: rgba(255,255,255,.33);
+    font-family: 'Doto', monospace;
+    font-size: 11px;
+  }
+  .bar {
+    height: 3px;
+    background: rgba(255,255,255,.16);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .bar span { display:block; width: 27%; height:100%; background: rgba(255,255,255,.86); }
+  .queue {
+    height: 44px;
+    flex: 0 0 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: rgba(0,0,0,.72);
+    border-bottom: 1px solid rgba(255,255,255,.045);
+    color: rgba(255,255,255,.42);
+    font-family: 'Doto', monospace;
+    font-size: 12px;
+    letter-spacing: .1em;
+  }
+  .livebar {
+    height: 58px;
+    flex: 0 0 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: rgba(16,16,18,.82);
+    border-bottom: 1px solid rgba(255,255,255,.04);
+  }
+  .live-title {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-family: 'Doto', monospace;
+    font-size: 23px;
+    color: rgba(255,255,255,.78);
+  }
+  .live-title .dot { width: 13px; height: 13px; box-shadow: 0 0 0 5px rgba(41,255,184,.13); }
+  .live-label {
+    font-family: 'Doto', monospace;
+    color: var(--live);
+    font-size: 12px;
+    letter-spacing: .13em;
+  }
+  .chat {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 24px 24px 12px;
+    background: rgba(31,28,43,.52);
+    overflow: hidden;
+  }
+  .connected {
+    text-align: center;
+    color: rgba(255,255,255,.34);
+    font-family: 'Doto', monospace;
+    font-size: 13px;
+    margin-bottom: 28px;
+  }
+  .message {
+    display: grid;
+    grid-template-columns: 38px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  .message .avatar { width: 38px; height: 38px; border: 2px solid rgba(41,255,184,.62); }
+  .speaker {
+    color: rgba(255,255,255,.36);
+    font-family: 'Doto', monospace;
+    font-size: 11px;
+    letter-spacing: .08em;
+    margin: 0 0 6px;
+  }
+  .bubble {
+    background: rgba(0,0,0,.82);
+    color: rgba(255,255,255,.88);
+    border-radius: 2px;
+    padding: 14px 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 650;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.04);
+  }
+  .replay {
+    margin-top: 9px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 25px;
+    padding: 0 11px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.12);
+    color: rgba(255,255,255,.38);
+    font-family: 'Doto', monospace;
+    font-size: 11px;
+  }
+  .now-note {
+    margin-top: 26px;
+    text-align: center;
+    color: rgba(255,255,255,.32);
+    font-family: 'Doto', monospace;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .composer {
+    height: 74px;
+    flex: 0 0 74px;
+    display: grid;
+    grid-template-columns: 1fr 42px 46px;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 24px 14px;
+    background: rgba(31,28,43,.76);
+  }
+  .composer input {
+    height: 42px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,.07);
+    background: rgba(0,0,0,.72);
+    color: rgba(255,255,255,.86);
+    padding: 0 16px;
+    outline: 0;
+    font-family: 'Doto', monospace;
+    font-size: 14px;
+    letter-spacing: .04em;
+  }
+  .composer input::placeholder { color: rgba(255,255,255,.34); }
+  .round, .send {
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 999px;
+    background: rgba(255,255,255,.065);
+    color: rgba(255,255,255,.72);
+    height: 42px;
+    cursor: pointer;
+  }
+  .send {
+    width: 46px;
+    height: 46px;
+    background: rgba(245,245,242,.72);
+    color: #111;
+    border-color: transparent;
+    font-size: 19px;
+  }
+  .footer {
+    height: 34px;
+    flex: 0 0 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    color: rgba(255,255,255,.32);
+    font-family: 'Doto', monospace;
+    font-size: 12px;
+    letter-spacing: .1em;
+    background: rgba(31,28,43,.82);
+  }
+  @media (max-width: 520px) {
+    .home-card { max-width: calc(100vw - 24px); height: calc(100vh - 24px); border-radius: 22px; }
+    .topbar { padding: 0 18px; gap: 8px; }
+    .avatar { width: 28px; height: 28px; }
+    .brand { gap: 9px; }
+    .brand-name { font-size: 26px; }
+    .top-actions { gap: 5px; font-size: 10px; }
+    .top-actions a, .top-actions button { padding: 0 9px; }
+    .time { font-size: 72px; }
+    .control.text:nth-of-type(n+6), .control:nth-of-type(4), .control:nth-of-type(5) { display:none; }
+  }
+</style>
+</head>
+<body>
+  <main class="stage">
+    <div class="glow blue"></div>
+    <div class="glow violet"></div>
+    <section class="home-card" data-page="opendio-radio-home-draft" data-size="440x780">
+      <header class="topbar">
+        <div class="brand">
+          <span class="avatar"><img src="./dj.png" alt="opendio"></span>
+          <span class="brand-name">opendio</span>
+        </div>
+        <nav class="top-actions" aria-label="page actions">
+          <a href="/player">PLAYER</a>
+          <button type="button">LOGIN</button>
+          <button class="active" type="button">DARK</button>
+          <button type="button">LIGHT</button>
+        </nav>
+      </header>
+
+      <section class="hero">
+        <div class="time" id="homeTime">21:11</div>
+        <div class="weekday" id="homeWeekday">Monday</div>
+        <div class="date" id="homeDate">20 · APR · 2026</div>
+        <div class="onair"><span class="dot"></span><span>ON AIR</span></div>
+      </section>
+
+      <section class="player-strip">
+        <div class="mini-wave"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="track">
+          <div class="track-title" id="homeTitle">Loading track...</div>
+          <div class="track-status" id="homeArtist">PLAYING</div>
+        </div>
+        <div class="controls">
+          <button class="control" type="button" data-action="prev">◀</button>
+          <button class="control" type="button" data-action="pause">Ⅱ</button>
+          <button class="control" type="button" data-action="next">▶</button>
+          <button class="control" type="button" data-action="stop">■</button>
+          <button class="control" type="button">♡</button>
+          <button class="control text" type="button">HIDE</button>
+          <button class="control text" type="button">FAV.</button>
+        </div>
+        <div class="progress-row"><span>0:00</span><span class="bar"><span></span></span><span>--:--</span></div>
+      </section>
+
+      <section class="queue"><span>QUEUE</span><span id="queueCount">0 TRACKS</span></section>
+
+      <section class="livebar">
+        <div class="live-title"><span class="dot"></span><span>opendio</span></div>
+        <div class="live-label">LIVE</div>
+      </section>
+
+      <section class="chat">
+        <div class="connected">Connected to opendio server</div>
+        <div class="message">
+          <span class="avatar"><img src="./dj.png" alt="opendio"></span>
+          <div>
+            <div class="speaker">OPENDIO</div>
+            <div class="bubble" id="djSay">我在线。告诉我你现在的状态，我会按时间、心情和你的歌单来接下一首。</div>
+            <div class="replay">▶ REPLAY</div>
+          </div>
+        </div>
+        <div class="now-note" id="nowNote">Now playing: loading...</div>
+      </section>
+
+      <form class="composer" id="homeComposer">
+        <input id="homeInput" autocomplete="off" placeholder="Say something to the DJ...">
+        <button class="round" type="button" aria-label="mic">♬</button>
+        <button class="send" type="submit" aria-label="send">↑</button>
+      </form>
+      <footer class="footer"><span>OPENDIO FM.</span><span>CONNECTED.</span></footer>
+    </section>
+  </main>
+<script>
+const $ = (id) => document.getElementById(id);
+function updateClock(){
+  const now = new Date();
+  $('homeTime').textContent = now.toLocaleTimeString('zh-CN', { hour:'2-digit', minute:'2-digit', hour12:false });
+  $('homeWeekday').textContent = now.toLocaleDateString('en-US', { weekday:'long' });
+  $('homeDate').textContent = now.toLocaleDateString('en-US', { day:'2-digit', month:'short', year:'numeric' }).replace(',', '').replace(/ /g, ' · ').toUpperCase();
+}
+async function loadNow(){
+  try {
+    const state = await fetch('/api/now').then(r => r.json());
+    const track = state.current || {};
+    $('homeTitle').textContent = track.title || track.name || 'No track yet';
+    $('homeArtist').textContent = track.artist ? `${track.artist} · PLAYING` : 'PLAYING';
+    $('queueCount').textContent = `${(state.queue || []).length} TRACKS`;
+    if (state.dj && state.dj.say) $('djSay').textContent = state.dj.say.replaceAll('Claudio', 'opendio');
+    $('nowNote').textContent = `Now playing: ${track.title || track.name || 'waiting'}${track.artist ? ' - ' + track.artist : ''}.`;
+  } catch {
+    $('homeTitle').textContent = 'Backend offline';
+    $('homeArtist').textContent = 'WAITING';
+  }
+}
+async function playerAction(action){
+  try { await fetch(`/api/player/${action}`, { method:'POST' }); await loadNow(); } catch {}
+}
+$('homeComposer').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const text = $('homeInput').value.trim();
+  if (!text) return;
+  $('homeInput').value = '';
+  $('djSay').textContent = '收到，我在重新选一首…';
+  try {
+    const state = await fetch('/api/chat', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ message: text }) }).then(r => r.json());
+    if (state.reply) $('djSay').textContent = state.reply.replaceAll('Claudio', 'opendio');
+    await loadNow();
+  } catch { $('djSay').textContent = '后端刚刚没接上，我还在。'; }
+});
+document.querySelectorAll('[data-action]').forEach(btn => btn.addEventListener('click', () => playerAction(btn.dataset.action)));
+updateClock();
+setInterval(updateClock, 30000);
+loadNow();
+</script>
+</body>
+</html>

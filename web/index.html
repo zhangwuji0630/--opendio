@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>opendio Radio Home Previous Draft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Doto:wght@400;600;700&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #111114;
+    --paper: #f3f3f1;
+    --paper-2: #e9e9e5;
+    --muted: #7d7d82;
+    --line: rgba(17,17,20,0.09);
+    --live: #29ffb8;
+  }
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #111; color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  * { box-sizing: border-box; }
+  .stage { position: fixed; inset: 0; display: grid; place-items: center; overflow: hidden; background: radial-gradient(ellipse at 50% 50%, #11121a 0%, #0a0a10 70%, #07070b 100%); }
+  .fluid { position: absolute; border-radius: 50%; filter: blur(142px) saturate(1.1); opacity: 0.68; mix-blend-mode: screen; pointer-events: none; }
+  .fluid.blue { width: 70vmin; height: 70vmin; left: 50%; top: 50%; margin-left: -35vmin; margin-top: -35vmin; background: radial-gradient(circle at 40% 40%, oklch(0.62 0.17 256) 0%, oklch(0.48 0.18 259) 40%, oklch(0.30 0.12 261 / 0) 72%); animation: flow-blue 26s cubic-bezier(.45,.05,.55,.95) infinite; }
+  .fluid.violet { width: 66vmin; height: 66vmin; left: 50%; top: 50%; margin-left: -33vmin; margin-top: -33vmin; background: radial-gradient(circle at 50% 50%, oklch(0.58 0.19 330) 0%, oklch(0.42 0.20 325) 42%, oklch(0.28 0.14 320 / 0) 72%); animation: flow-violet 34s cubic-bezier(.45,.05,.55,.95) infinite; }
+  .fluid.accent { width: 42vmin; height: 42vmin; left: 50%; top: 50%; margin-left: -21vmin; margin-top: -21vmin; opacity: 0.52; filter: blur(114px) saturate(1.1); background: radial-gradient(circle at 50% 50%, oklch(0.70 0.18 293) 0%, oklch(0.50 0.18 288) 45%, oklch(0.30 0.12 283 / 0) 72%); animation: flow-accent 42s cubic-bezier(.45,.05,.55,.95) infinite; }
+  @keyframes flow-blue { 0% { transform: translate(-22vmin, -14vmin) scale(1) rotate(0deg); } 40% { transform: translate(24vmin, -4vmin) scale(.95) rotate(80deg); } 80% { transform: translate(-10vmin, 12vmin) scale(.98) rotate(160deg); } 100% { transform: translate(-22vmin, -14vmin) scale(1) rotate(360deg); } }
+  @keyframes flow-violet { 0% { transform: translate(20vmin, 16vmin) scale(1.05) rotate(0deg); } 40% { transform: translate(-26vmin, 2vmin) scale(1.14) rotate(-80deg); } 80% { transform: translate(12vmin, -12vmin) scale(1.08) rotate(-160deg); } 100% { transform: translate(20vmin, 16vmin) scale(1.05) rotate(-360deg); } }
+  @keyframes flow-accent { 0% { transform: translate(2vmin, -4vmin) scale(1); } 50% { transform: translate(6vmin, 18vmin) scale(.88); } 100% { transform: translate(2vmin, -4vmin) scale(1); } }
+  .bg-grain { position: absolute; inset: 0; background-image: radial-gradient(ellipse at 50% 55%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 80%, rgba(0,0,0,0.35) 100%); pointer-events: none; }
+  .bg-noise { position: absolute; inset: 0; opacity: 0.05; pointer-events: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); mix-blend-mode: overlay; }
+  .home-card { position: relative; width: 440px; max-width: calc(100vw - 48px); height: min(780px, calc(100vh - 48px)); border-radius: 28px; overflow: hidden; box-shadow: 0 40px 80px -20px rgba(0,0,0,0.5), 0 10px 24px -8px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.06); display: flex; flex-direction: column; background: var(--paper); }
+  .home-header { position: relative; height: 168px; flex: 0 0 auto; padding: 18px 20px 16px; color: #fff; background: linear-gradient(180deg, #0c0c0e 0%, #16161a 100%); overflow: hidden; z-index: 2; }
+  .home-header::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 116px; background-image: radial-gradient(circle, rgba(255,255,255,0.09) 1px, transparent 1px); background-size: 16px 16px; pointer-events: none; mask-image: linear-gradient(180deg, rgba(0,0,0,0.95), transparent 100%); -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.95), transparent 100%); }
+  .header-row { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr auto 1fr; align-items: start; gap: 12px; }
+  .brand { display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: center; }
+  .avatar { width: 26px; height: 26px; border-radius: 50%; overflow: hidden; border: 1px solid rgba(255,255,255,0.18); }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .brand-name { font-family: 'Doto', monospace; font-size: 25px; line-height: .88; letter-spacing: -0.04em; }
+  .brand-sub { margin-top: 6px; padding-left: 34px; color: rgba(255,255,255,0.46); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+  .brand-time { position: absolute; left: 50%; top: 76px; transform: translateX(-50%); margin-top: 0; padding-left: 0; display: grid; justify-items: center; gap: 7px; color: rgba(255,255,255,.82); text-align: center; }
+  .brand-time .corner-time { font-family: 'Doto', monospace; font-size: 48px; line-height: .82; letter-spacing: -0.08em; }
+  .brand-time .corner-date { margin-top: 0; color: rgba(255,255,255,.42); font-family: 'Doto', monospace; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+  .live-chip { display: none; }
+  .header-meta { grid-column: 3; display: flex; justify-content: flex-end; justify-self: end; gap: 0; }
+  .corner-clock { display: none; text-align: right; color: rgba(255,255,255,.78); }
+  .corner-time { font-family: 'Doto', monospace; font-size: 30px; line-height: .82; letter-spacing: -0.08em; }
+  .corner-date { margin-top: 7px; color: rgba(255,255,255,.38); font-family: 'Doto', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+  .live-dot { width: 7px; height: 7px; border-radius: 999px; background: var(--live); box-shadow: 0 0 8px rgba(41,255,184,.6); }
+  .header-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+  .player-link, .theme-toggle { height: 23px; display: inline-flex; align-items: center; justify-content: center; color: rgba(255,255,255,.86); text-decoration: none; border: 1px solid rgba(255,255,255,.14); border-radius: 999px; padding: 0 8px; background: rgba(255,255,255,.075); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font-family: 'Doto', monospace; font-size: 9px; font-weight: 800; letter-spacing: .1em; box-shadow: 0 8px 22px rgba(0,0,0,.15); white-space: nowrap; cursor: pointer; }
+  .theme-toggle { appearance: none; }
+  .player-link:hover, .theme-toggle:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.24); }
+  .home-card.theme-night {
+    --paper: #101014;
+    --paper-2: #15151a;
+    --muted: #9a9aa2;
+    --line: rgba(255,255,255,0.09);
+    --night-card: rgba(255,255,255,.045);
+    --night-card-strong: rgba(255,255,255,.065);
+    --night-border: rgba(255,255,255,.08);
+    --night-divider: rgba(255,255,255,.055);
+    --night-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 18px 40px rgba(0,0,0,.22);
+    color: #f2f2f4;
+    background: #101014;
+  }
+  .scene-strip { flex: 0 0 22px; display: block; margin-top: -16px; padding: 16px 0 0; border-bottom: 0; border-radius: 20px 20px 0 0; background: linear-gradient(180deg, #ffffff 0%, var(--paper) 100%); color: transparent; position: relative; z-index: 4; overflow: hidden; }
+  .home-card.theme-night .scene-strip { background: linear-gradient(180deg, #141418 0%, #101014 100%); }
+  .home-card.theme-night .dj-panel,
+  .home-card.theme-night .composer button,
+  .home-card.theme-night .control-btn { background: var(--night-card); color: #f5f5f7; border-color: var(--night-border); }
+  .home-card.theme-night .composer input { background: transparent; color: #f5f5f7; border-color: rgba(255,255,255,.16); }
+  .home-card.theme-night .queue-panel,
+  .home-card.theme-night .dj-panel,
+  .home-card.theme-night .composer { border-top-color: rgba(255,255,255,.075); }
+  .home-card.theme-night .now-card { background: transparent; border: 0; box-shadow: none; }
+  .home-card.theme-night .volume-row { background: rgba(20,20,24,.94); border-color: var(--night-border); box-shadow: var(--night-shadow); }
+  .home-card.theme-night .dj-panel { background: transparent; border-color: transparent; box-shadow: none; }
+  .home-card.theme-night .dj-head { background: transparent; border-bottom-color: transparent; }
+  .home-card.theme-night .control-btn.play,
+  .home-card.theme-night .composer .send { background: #f4f4f5; color: #111114; border-color: #f4f4f5; }
+  .home-card.theme-night .track-title,
+  .home-card.theme-night .bubble,
+  .home-card.theme-night .dj-name { color: #f3f3f5; }
+  .home-card.theme-night .track-artist,
+  .home-card.theme-night .section-head,
+  .home-card.theme-night .queue-item,
+  .home-card.theme-night .dj-status,
+  .home-card.theme-night .speaker,
+  .home-card.theme-night .now-note,
+  .home-card.theme-night .home-time-row,
+  .home-card.theme-night .volume-row { color: #9b9ba3; }
+  .home-card.theme-night .progress { background: rgba(255,255,255,.14); }
+  .home-card.theme-night .progress span { background: #f4f4f5; }
+  .home-card.theme-night .queue-item:hover { background: rgba(255,255,255,.07); color: #f3f3f5; }
+  .scene-strip { flex: 0 0 22px; display: block; margin-top: -16px; padding: 16px 0 0; border-bottom: 0; border-radius: 20px 20px 0 0; background: linear-gradient(180deg, #ffffff 0%, var(--paper) 100%); color: transparent; position: relative; z-index: 4; overflow: hidden; }
+  .now-card { flex: 0 0 50px; margin: 8px 18px 0; padding: 2px 0 0; color: #111; position: relative; z-index: 1; display: grid; grid-template-columns: minmax(94px, 1fr) auto minmax(90px, .72fr); align-items: center; column-gap: 8px; background: transparent; border: 0; box-shadow: none; }
+  .now-top { min-width: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .now-top::-webkit-scrollbar { display: none; }
+  .track-title { display: inline-block; min-width: max-content; max-width: none; white-space: nowrap; font-size: 13.5px; font-weight: 750; letter-spacing: -0.035em; }
+  .track-artist { display: inline-block; min-width: max-content; max-width: none; margin-top: 1px; color: #77777d; font-size: 9.5px; letter-spacing: .02em; white-space: nowrap; }
+  .transport { display: flex; align-items: center; gap: 4px; }
+  .control-btn { height: 25px; min-width: 25px; border: 1px solid rgba(17,17,20,.12); border-radius: 999px; background: rgba(255,255,255,.38); color: #111; cursor: pointer; font-size: 9px; font-weight: 800; box-shadow: none; }
+  .control-btn.play { height: 31px; min-width: 33px; background: #f4f4f5; color: #111; border-color: #f4f4f5; font-size: 10px; font-weight: 900; }
+  .progress-wrap { min-width: 0; }
+  .progress {
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(17,17,20,.12);
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .progress span { display: block; width: 0%; height: 100%; background: #111; }
+  .home-time-row { margin-top: 3px; display: flex; justify-content: space-between; color: #8a8a90; font-size: 9px; font-variant-numeric: tabular-nums; }
+  .volume-popover { position: relative; display: inline-flex; }
+  .volume-toggle { font-family: 'Doto', monospace; letter-spacing: .03em; padding: 0 7px; }
+  .volume-row { position: absolute; right: 0; top: 36px; z-index: 12; width: 118px; display: none; grid-template-columns: 1fr auto; gap: 7px; align-items: center; padding: 8px 10px; border: 1px solid rgba(17,17,20,.1); border-radius: 999px; background: rgba(255,255,255,.9); box-shadow: 0 12px 28px rgba(0,0,0,.16); color: #8a8a90; font-size: 10px; }
+  .volume-popover.open .volume-row { display: grid; }
+  .volume-row span:first-child { display: none; }
+  .volume-row span:last-child { min-width: 18px; text-align: right; }
+  .volume-range { width: 100%; accent-color: #111; }
+  .queue-panel { flex: 0 0 118px; margin: 8px 18px 0; padding: 12px 2px 0; border-top: 1px solid rgba(17,17,20,.075); }
+  .section-head { display: flex; align-items: center; justify-content: space-between; color: #717178; font-family: 'Doto', monospace; font-size: 12px; letter-spacing: .1em; }
+  .queue-list { margin-top: 8px; display: grid; gap: 6px; }
+  .queue-item { display: grid; grid-template-columns: 24px 1fr; align-items: center; gap: 9px; min-height: 24px; font-size: 12px; color: #49494e; cursor: pointer; border-radius: 10px; padding: 2px 6px 2px 0; }
+  .queue-item[data-type="talk"] { color: #5f5f66; cursor: default; }
+  .queue-item[data-type="talk"] .queue-title { font-style: italic; }
+  .queue-item[data-status="current"] { color: #111; }
+  .queue-item[data-status="current"] .queue-index { color: var(--live); }
+  .queue-item[data-status="current"] .queue-tag { color: #111; }
+  .queue-item:hover { background: rgba(17,17,20,.045); color: #111; }
+  .queue-index { font-family: 'Doto', monospace; color: #9b9ba0; }
+  .queue-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .queue-tag { display:none; }
+  .dj-panel { position: relative; flex: 1 1 auto; min-height: 210px; margin: 12px 18px 14px; padding-top: 12px; border-radius: 0; background: transparent; overflow: hidden; border: 0; border-top: 1px solid rgba(17,17,20,.075); display: flex; flex-direction: column; }
+  .dj-head { display: none; }
+  .dj-name { display: flex; align-items: center; gap: 8px; font-family: 'Doto', monospace; font-size: 15px; }
+  .tiny-dot { width: 8px; height: 8px; border-radius: 99px; background: var(--live); }
+  .dj-status { color: #8d8d92; font-size: 11px; letter-spacing: .05em; }
+  .chat-stream { flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 6px 0 0; }
+  .chat-lines { height: 100%; overflow-y: auto; padding: 0 2px 8px 0; display: flex; flex-direction: column; gap: 9px; scrollbar-width: none; }
+  .chat-lines::-webkit-scrollbar { display: none; }
+  .bubble-row { display: flex; gap: 9px; align-items: flex-start; max-width: 100%; }
+  .bubble-avatar { flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; overflow: hidden; border: 1px solid rgba(17,17,20,.1); }
+  .bubble-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .speaker { color: #8d8d92; font-size: 9px; margin-bottom: 3px; letter-spacing: .08em; }
+  .bubble { display: inline-block; max-width: 100%; padding: 8px 10px; border-radius: 14px 14px 14px 4px; background: rgba(17,17,20,.055); color: #1d1d21; font-size: 12px; line-height: 1.42; letter-spacing: -0.008em; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .bubble-row.user { justify-content: flex-end; }
+  .bubble-row.user > div { max-width: 82%; text-align: right; }
+  .bubble-row.user .bubble { color: #111; background: rgba(41,255,184,.18); border-radius: 14px 14px 4px 14px; text-align: left; }
+  .bubble-row.agent > div { max-width: calc(100% - 33px); }
+  .bubble-row.agent .speaker { color: #717178; }
+  .now-note { margin-top: 10px; color: #9b9ba0; font-family: 'Doto', monospace; font-size: 9.5px; letter-spacing: .055em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .composer { flex: 0 0 58px; display: grid; grid-template-columns: 1fr 52px; align-items: center; gap: 8px; margin: 0 18px; padding: 10px 0 10px; background: transparent; border-top: 1px solid rgba(17,17,20,.075); }
+  .composer input { height: 36px; border: 0; border-bottom: 1px solid rgba(17,17,20,.12); border-radius: 0; padding: 0 2px; outline: 0; background: transparent; color: #111; font-size: 12px; letter-spacing: -0.01em; }
+  .composer input::placeholder { color: #aaaab0; }
+  .composer button { height: 34px; border-radius: 999px; border: 1px solid rgba(17,17,20,.12); background: rgba(255,255,255,.08); color: #111; cursor: pointer; font-size: 11px; }
+  .composer .send { height: 34px; min-width: 52px; background: #f4f4f5; color: #111; border-color: #f4f4f5; font-family: 'Doto', monospace; font-size: 10px; font-weight: 800; letter-spacing: .12em; }
+  .toast { position: absolute; left: 50%; bottom: 84px; transform: translateX(-50%); z-index: 20; max-width: calc(100% - 48px); padding: 9px 14px; border-radius: 999px; background: rgba(17,17,20,.9); color: #fff; font-size: 12px; opacity: 0; pointer-events: none; transition: opacity .16s ease; }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+  <main class="stage">
+    <div class="fluid blue"></div><div class="fluid violet"></div><div class="fluid accent"></div><div class="bg-grain"></div><div class="bg-noise"></div>
+    <section class="home-card" data-page="opendio-radio-home-previous-draft" data-size="440x780">
+      <header class="home-header">
+        <div class="header-row">
+          <div>
+            <div class="brand"><span class="avatar"><img src="./dj.png" alt="opendio"></span><span class="brand-name">opendio</span></div>
+            <div class="brand-time"><span class="corner-time" id="homeTime">16:54</span><span class="corner-date"><span id="homeWeekday">THU</span> · <span id="homeDate">MAY 07</span></span></div>
+            <div class="brand-sub">Personal AI Radio</div>
+          </div>
+          <div class="header-meta"><div class="header-actions"><a class="player-link" href="/player">PLAYER</a><button class="theme-toggle" type="button" id="themeToggle">NIGHT</button></div></div>
+        </div>
+      </header>
+      <section class="scene-strip" aria-hidden="true"></section>
+      <section class="now-card">
+        <div class="now-top"><div><div class="track-title" id="homeTitle">Loading track...</div><div class="track-artist" id="homeArtist">netease-cli · mpv</div></div></div>
+        <div class="transport"><button class="control-btn" type="button" data-action="prev">⏮</button><button class="control-btn play" type="button" data-action="play">▶</button><button class="control-btn" type="button" data-action="next">⏭</button><div class="volume-popover" id="volumePopover"><button class="control-btn volume-toggle" type="button" id="volumeToggle">VOL</button><div class="volume-row"><span>VOL</span><input class="volume-range" id="homeVolume" type="range" min="0" max="100" value="80"><span id="homeVolumeLabel">80</span></div></div><button class="control-btn" type="button" id="likeButton">♡</button></div>
+        <div class="progress-wrap"><div class="progress" id="homeProgress"><span id="homeProgressFill"></span></div><div class="home-time-row"><span id="homePosition">0:00</span><span id="homeDuration">--:--</span></div></div>
+      </section>
+      <section class="queue-panel"><div class="section-head"><span>队列</span><span id="queueCount">0 首</span></div><div class="queue-list" id="queueList"><div class="queue-item"><span class="queue-index">01</span><span class="queue-title">Waiting for playlist...</span><span class="queue-tag">NETEASE</span></div><div class="queue-item"><span class="queue-index">02</span><span class="queue-title">Personal radio queue</span><span class="queue-tag">AI</span></div><div class="queue-item"><span class="queue-index">03</span><span class="queue-title">Taste-aware next track</span><span class="queue-tag">DJ</span></div></div></section>
+      <section class="dj-panel"><div class="dj-head"><div class="dj-name"><span class="tiny-dot"></span><span>opendio 直播</span></div><div class="dj-status">回复流</div></div><div class="chat-stream"><div class="chat-lines" id="chatLines"><div class="bubble-row agent"><span class="bubble-avatar"><img src="./dj.png" alt="opendio"></span><div><div class="speaker">OPENCLAW</div><div class="bubble" id="djSay">我在线。告诉我你现在的状态，我会按时间、心情和你的歌单来接下一首。</div></div></div></div></div></section>
+      <form class="composer" id="homeComposer"><input id="homeInput" autocomplete="off" placeholder="Tell opendio what you want to hear..."><button class="send" type="submit">SEND</button></form><div class="toast" id="toast"></div>
+    </section>
+  </main>
+<script>
+const $ = (id) => document.getElementById(id);
+let lastState = null;
+let playerStatus = 'idle';
+let toastTimer = null;
+let volumeTimer = null;
+const pendingPlayerActions = new Set();
+
+function esc(text) { return String(text ?? '').replace(/[&<>"']/g, (ch) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch])); }
+function mmss(value) { const n = Math.max(0, Number(value) || 0); const m = Math.floor(n / 60); const s = Math.floor(n % 60); return `${m}:${String(s).padStart(2, '0')}`; }
+function showToast(text) { const el = $('toast'); if (!el) return; el.textContent = text; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 1800); }
+function updateClock(){ const now = new Date(); $('homeTime').textContent = now.toLocaleTimeString('zh-CN', { hour:'2-digit', minute:'2-digit', hour12:false }); $('homeWeekday').textContent = now.toLocaleDateString('zh-CN', { weekday:'short' }); $('homeDate').textContent = now.toLocaleDateString('zh-CN', { month:'short', day:'2-digit' }); }
+function shortProvider(track) { return ((track.provider || track.source || 'AI').replace('-cli','').toUpperCase()); }
+function renderQueue(queue, program){
+  const list = $('queueList');
+  const sourceItems = (program && program.length ? program : (queue || []).map(track => ({ type:'song', title: track.title || track.name || '未命名', track })));
+  const items = sourceItems.filter(item => item?.type === 'song').slice(0, 4);
+  $('queueCount').textContent = `${items.length} 首`;
+  if (!items.length) { list.innerHTML = '<div class="queue-item"><span class="queue-index">--</span><span class="queue-title">等待队列</span><span class="queue-tag"></span></div>'; return; }
+  list.innerHTML = items.map((item, index) => {
+    const title = item.title || item.track?.title || item.track?.name || '未命名';
+    return `<div class="queue-item" data-type="song" data-status="${esc(item.status || '')}" data-queue-index="${index}"><span class="queue-index">${String(index + 1).padStart(2, '0')}</span><span class="queue-title">${esc(title)}</span><span class="queue-tag"></span></div>`;
+  }).join('');
+  list.querySelectorAll('.queue-item').forEach(el => {
+    const item = items[Number(el.dataset.queueIndex)];
+    if (item?.track && item.status !== 'current') el.addEventListener('click', () => playProgramItem(item.track));
+  });
+}
+function renderProgress(player = {}) {
+  const pos = Number(player.position) || 0;
+  const dur = Number(player.duration) || Number(lastState?.current?.duration || 0) / 1000 || 0;
+  $('homePosition').textContent = mmss(pos);
+  $('homeDuration').textContent = dur ? mmss(dur) : '--:--';
+  const pct = dur ? Math.max(0, Math.min(100, pos / dur * 100)) : 0;
+  $('homeProgressFill').style.width = `${pct}%`;
+  const vol = Number.isFinite(Number(player.volume)) ? Math.round(Number(player.volume)) : Number($('homeVolume')?.value || 80);
+  if ($('homeVolume') && document.activeElement !== $('homeVolume')) $('homeVolume').value = vol;
+  if ($('homeVolumeLabel')) $('homeVolumeLabel').textContent = String(vol);
+}
+function renderChat(messages = [], state = {}) {
+  const lines = $('chatLines');
+  if (!lines) return;
+  const chat = (messages || []).filter(msg => ['user','agent'].includes(msg.role)).slice(-12);
+  const fallback = state.agent?.reply || state.dj?.say || '我在线。告诉我你现在的状态，我会按时间、心情和你的歌单来接下一首。';
+  const rows = chat.length ? chat : [{ role:'agent', text:fallback }];
+  lines.innerHTML = rows.map(msg => {
+    const text = esc(msg.text || '');
+    if (msg.role === 'user') return `<div class="bubble-row user"><div><div class="speaker">YOU</div><div class="bubble">${text}</div></div></div>`;
+    return `<div class="bubble-row agent"><span class="bubble-avatar"><img src="./dj.png" alt="opendio"></span><div><div class="speaker">OPENCLAW</div><div class="bubble">${text}</div></div></div>`;
+  }).join('');
+  requestAnimationFrame(() => { lines.scrollTop = lines.scrollHeight; });
+}
+function renderState(state){
+  lastState = state; const track = state.current || {}; const player = state.player || {}; playerStatus = player.status || 'idle';
+  $('homeTitle').textContent = track.title || track.name || '还没有歌曲';
+  $('homeArtist').textContent = track.artist || track.provider || 'opendio';
+  renderChat(state.messages || [], state);
+  renderQueue(state.queue || [], state.program || []); renderProgress(player);
+  const playButton = document.querySelector('[data-action="play"]'); if (playButton) playButton.textContent = playerStatus === 'playing' ? 'Ⅱ' : '▶';
+}
+async function loadNow(){
+  try {
+    const response = await fetch('/api/now', { cache:'no-store' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    renderState(await response.json());
+  } catch {
+    showToast('后端暂时连不上，正在重试');
+    if (!lastState?.current) {
+      $('homeTitle').textContent = '等待同步';
+      $('homeArtist').textContent = 'opendio';
+    }
+  }
+}
+async function playerAction(action){
+  const button = action === 'play' ? document.querySelector('[data-action="play"]') : document.querySelector(`[data-action="${action}"]`);
+  const oldLabel = button?.textContent;
+  let endpoint = action;
+  if (action === 'play') endpoint = playerStatus === 'playing' ? 'pause' : (playerStatus === 'paused' ? 'resume' : 'play');
+  const lockKey = endpoint === 'resume' ? 'play' : endpoint;
+  if (pendingPlayerActions.has(lockKey)) {
+    showToast('正在处理上一下，别急～');
+    return;
+  }
+  pendingPlayerActions.add(lockKey);
+  if (button) button.disabled = true;
+
+  // Optimistic UI: controls should feel instant; backend state is synced when the request returns.
+  if (endpoint === 'pause') {
+    playerStatus = 'paused';
+    if (button) button.textContent = '▶';
+    showToast('已暂停');
+  } else if (endpoint === 'resume' || endpoint === 'play') {
+    playerStatus = 'playing';
+    if (button) button.textContent = 'Ⅱ';
+    showToast('正在播放');
+  } else if (endpoint === 'next') {
+    showToast('正在切下一首…');
+  } else if (endpoint === 'prev') {
+    showToast('正在切上一首…');
+  }
+
+  try {
+    const result = await fetch(`/api/player/${endpoint}`, { method:'POST', headers:{'content-type':'application/json'}, body: endpoint === 'play' ? JSON.stringify({ speak:false }) : '{}' }).then(r => r.json());
+    renderState(result.state || await fetch('/api/now').then(r => r.json()));
+  }
+  catch {
+    if (button && oldLabel) button.textContent = oldLabel;
+    showToast('操作失败，正在重新同步');
+    await loadNow();
+  } finally {
+    pendingPlayerActions.delete(lockKey);
+    if (button) button.disabled = false;
+  }
+}
+async function playProgramItem(track){
+  if (!track) return;
+  if (pendingPlayerActions.has('play')) { showToast('正在切换上一首，稍等一下～'); return; }
+  pendingPlayerActions.add('play');
+  showToast(`播放：${track.title || track.name || '队列歌曲'}`);
+  try { const result = await fetch('/api/player/play', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ track, speak:false }) }).then(r => r.json()); renderState(result.state || await fetch('/api/now').then(r => r.json())); }
+  catch { showToast('这首暂时没播起来'); }
+  finally { pendingPlayerActions.delete('play'); }
+}
+async function playQueueIndex(index){ const track = lastState?.queue?.[index]; return playProgramItem(track); }
+async function seekHome(event) { const dur = Number(lastState?.player?.duration) || Number(lastState?.current?.duration || 0) / 1000 || 0; if (!dur) return; const rect = $('homeProgress').getBoundingClientRect(); const pct = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)); const seconds = pct * dur; $('homeProgressFill').style.width = `${pct * 100}%`; $('homePosition').textContent = mmss(seconds); await fetch('/api/player/seek', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ seconds }) }).catch(() => {}); await loadNow(); }
+$('homeComposer')?.addEventListener('submit', async (event) => { event.preventDefault(); const input = $('homeInput'); const text = input.value.trim(); if (!text) return; input.value = ''; const optimisticMessages = [...(lastState?.messages || []).slice(-10), { role:'user', text, source:'opendio-agent' }, { role:'agent', text:'我在听，马上回你…', source:'pending' }]; const optimistic = { ...(lastState || {}), messages: optimisticMessages }; renderState(optimistic); try { const result = await fetch('/api/agent/chat', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ text }) }).then(r => r.json()); renderState(result.state || await fetch('/api/now').then(r => r.json())); } catch { const failed = { ...(lastState || {}), messages: [...optimisticMessages.filter(m => m.source !== 'pending'), { role:'agent', text:'OpenClaw agent 刚刚没接上，我还在。' }] }; renderState(failed); } });
+document.querySelectorAll('[data-action]').forEach(btn => btn.addEventListener('click', () => playerAction(btn.dataset.action)));
+$('homeProgress')?.addEventListener('pointerdown', seekHome);
+$('homeVolume')?.addEventListener('input', (event) => { const volume = Number(event.target.value); $('homeVolumeLabel').textContent = String(volume); clearTimeout(volumeTimer); volumeTimer = setTimeout(() => fetch('/api/player/volume', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ volume }) }).then(() => loadNow()).catch(() => {}), 120); });
+$('volumeToggle')?.addEventListener('click', (event) => { event.stopPropagation(); $('volumePopover')?.classList.toggle('open'); });
+document.addEventListener('click', (event) => { const popover = $('volumePopover'); if (popover && !popover.contains(event.target)) popover.classList.remove('open'); });
+$('likeButton')?.addEventListener('click', async () => {
+  showToast('已喜欢这首');
+  try { await fetch('/api/feedback', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ type:'like', text:'喜欢这首', track:lastState?.current }) }); } catch {}
+});
+try { const events = new EventSource('/stream'); events.addEventListener('state', (event) => renderState(JSON.parse(event.data))); } catch {}
+function applyTheme(mode) {
+  const card = document.querySelector('.home-card');
+  const button = $('themeToggle');
+  const isNight = mode === 'night';
+  card?.classList.toggle('theme-night', isNight);
+  if (button) button.textContent = isNight ? 'DAY' : 'NIGHT';
+}
+function initTheme() {
+  const saved = localStorage.getItem('opendio-theme') || 'day';
+  applyTheme(saved === 'night' ? 'night' : 'day');
+  $('themeToggle')?.addEventListener('click', () => {
+    const next = document.querySelector('.home-card')?.classList.contains('theme-night') ? 'day' : 'night';
+    localStorage.setItem('opendio-theme', next);
+    applyTheme(next);
+  });
+}
+updateClock(); initTheme(); setInterval(updateClock, 30000); setInterval(loadNow, 1000); loadNow();
+</script>
+</body>
+</html>

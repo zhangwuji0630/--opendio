@@ -5,37 +5,39 @@ opendio 是一个 Personal AI Radio Agent：不是普通音乐播放器，而是
 项目灵感来自 mmguo 的 Claudio FM：
 
 - 原型参考：<https://mmguo.dev/claudio-fm/>
-- 目标：做一个属于自己的 AI 音乐电台应用，应用名也叫 **opendio**。
+- 目标：做一个属于自己的 AI 音乐电台应用，应用名叫 **opendio**。
 
-## 当前定位
+## 当前状态
 
-opendio = open + audio + radio 的私人 AI 电台。
+当前仓库已经包含可运行 MVP 原型源码：
 
-它应该能做到：
+- `server/`：本地 Node.js 服务、播放器控制、radio agent、TTS、provider 接入
+- `web/`：前端静态页面，包括首页和播放器页
+- `data/`：用户品味、歌单、DJ 人设和设置数据
+- `public/`：运行时静态资源目录
+- `docs/`：产品、架构、路线图和接入文档
+- `records/`：开发进度和过程记录
 
-1. 理解用户当前状态：时间、心情、工作场景、天气、日程等。
-2. 从用户真实音乐库里选择合适的音乐。
-3. 像电台 DJ 一样自然地说一段串场话。
-4. 播放 DJ 旁白、音乐和歌词/字幕。
-5. 记住用户反馈，逐渐形成个人音乐 taste。
+## 运行
 
-## 当前阶段
-
-当前处于 **MVP 原型阶段**。
-
-已经有一个本地原型位于：
-
-```txt
-/Users/zhang/.openclaw/workspace/personal-ai-radio
+```bash
+npm start
 ```
 
-本地运行地址：
+打开：
 
 ```txt
 http://localhost:8765/
 ```
 
-当前重点不是继续自由设计 UI，而是先尽量复原 Claudio FM 的页面风格，再把 opendio 的真实音乐能力接进去。
+## 主要能力
+
+- Claudio FM 风格的本地 AI 电台 UI
+- `/` 首页和 `/player` 播放器页面
+- `/api/now`、`/api/chat`、`/api/agent/chat`、`/api/player/*` 等本地接口
+- `ncm-cli + mpv` 播放方向
+- Apple preview 临时音乐源 fallback
+- DJ 串场、队列推进、播放控制、反馈记录
 
 ## 文档入口
 

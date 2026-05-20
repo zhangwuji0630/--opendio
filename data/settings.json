@@ -1,0 +1,14 @@
+{
+  "musicProvider": "netease-cli",
+  "weatherLocation": "Shanghai",
+  "enableWeatherContext": true,
+  "useOpenClawDirector": false,
+  "djTtsVoice": "Tingting",
+  "djTtsRate": 185,
+  "djTtsVolume": 88,
+  "djDuckVolume": 22,
+  "ttsProvider": "fish",
+  "fishApiKey": "9b0d77d6f3b34d38a8fa32f752246230",
+  "fishModel": "s1",
+  "fishFormat": "mp3"
+}

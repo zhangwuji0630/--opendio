@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>opendio — Radio Home</title>
+<style>
+  :root { color-scheme: dark; --green:#7cff9b; --line:rgba(255,255,255,.12); --panel:rgba(10,11,16,.72); --muted:rgba(255,255,255,.58); }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; min-height:100vh; color:#f7f7fb;
+    font-family:"Space Grotesk","Inter",ui-sans-serif,system-ui,-apple-system,sans-serif;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(90,110,255,.36), transparent 34%),
+      radial-gradient(circle at 78% 12%, rgba(183,68,255,.28), transparent 30%),
+      radial-gradient(circle at 58% 86%, rgba(25,255,176,.10), transparent 28%),
+      radial-gradient(circle, rgba(255,255,255,.08) 1px, transparent 1.2px) 0 0/18px 18px,
+      #07080d;
+    overflow-x:hidden;
+  }
+  body:before { content:""; position:fixed; inset:0; pointer-events:none; background:linear-gradient(180deg, transparent, rgba(0,0,0,.34)); }
+  a { color:inherit; }
+  .shell { position:relative; z-index:1; width:min(1120px, calc(100vw - 32px)); margin:0 auto; padding:28px 0 40px; }
+  .top { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; }
+  .brand { display:flex; align-items:center; gap:12px; cursor:pointer; }
+  .avatar { width:46px; height:46px; border-radius:14px; border:1px solid var(--line); background:#111; overflow:hidden; box-shadow:0 0 34px rgba(123,111,255,.24); }
+  .avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+  .brand h1 { margin:0; font-size:22px; letter-spacing:.18em; text-transform:uppercase; }
+  .brand p { margin:2px 0 0; color:var(--muted); font-size:12px; letter-spacing:.14em; text-transform:uppercase; }
+  .nav { display:flex; align-items:center; gap:10px; }
+  .chip, button { border:1px solid var(--line); background:rgba(12,13,20,.72); color:#fff; border-radius:999px; padding:10px 13px; font:inherit; font-size:12px; letter-spacing:.08em; text-transform:uppercase; text-decoration:none; }
+  button { cursor:pointer; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  button:hover, .chip:hover { border-color:rgba(124,255,155,.42); }
+  .hero { display:grid; grid-template-columns:minmax(0, 1.12fr) minmax(300px, .88fr); gap:18px; }
+  .panel { border:1px solid var(--line); background:var(--panel); backdrop-filter: blur(24px); border-radius:28px; box-shadow:0 24px 90px rgba(0,0,0,.36); }
+  .main { padding:28px; min-height:520px; display:flex; flex-direction:column; }
+  .kicker { display:flex; align-items:center; gap:9px; color:var(--muted); font-size:12px; letter-spacing:.18em; text-transform:uppercase; }
+  .live-dot { width:8px; height:8px; border-radius:99px; background:var(--green); box-shadow:0 0 16px var(--green); }
+  .time { margin:26px 0 6px; font-size:clamp(64px, 11vw, 132px); line-height:.86; letter-spacing:-.07em; font-weight:800; }
+  .date { color:var(--muted); font-size:14px; letter-spacing:.12em; text-transform:uppercase; }
+  .now { margin-top:28px; padding:18px; border:1px solid var(--line); background:rgba(255,255,255,.04); border-radius:22px; }
+  .label { color:var(--green); font-size:11px; letter-spacing:.2em; text-transform:uppercase; }
+  .track { margin-top:9px; font-size:28px; line-height:1.08; letter-spacing:-.03em; }
+  .artist { margin-top:8px; color:var(--muted); }
+  .controls { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+  .controls button { min-width:86px; }
+  .chat { margin-top:auto; padding-top:22px; }
+  .reply { min-height:72px; padding:16px; border-radius:18px; border:1px solid rgba(124,255,155,.18); background:rgba(124,255,155,.05); color:#eefef1; line-height:1.55; }
+  .input { margin-top:12px; display:grid; grid-template-columns:1fr auto auto; gap:9px; }
+  input { width:100%; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.08); color:#fff; padding:0 16px; outline:none; font:inherit; min-height:44px; }
+  input::placeholder { color:rgba(255,255,255,.38); }
+  .side { padding:22px; display:flex; flex-direction:column; gap:16px; }
+  .side h2 { margin:0; font-size:13px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
+  .queue { display:grid; gap:10px; }
+  .q { padding:13px; border:1px solid var(--line); border-radius:16px; background:rgba(255,255,255,.04); }
+  .q strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .q span { display:none; }
+  .status { margin-top:auto; display:grid; gap:8px; color:var(--muted); font-size:12px; }
+  .row { display:flex; justify-content:space-between; gap:12px; border-top:1px solid var(--line); padding-top:8px; }
+  .row b { color:#fff; font-weight:500; text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .profile { display:none; margin-top:18px; padding:18px; }
+  .profile.open { display:block; }
+  .profile-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+  .stat { border:1px solid var(--line); border-radius:16px; padding:13px; background:rgba(255,255,255,.04); }
+  .stat b { display:block; color:var(--green); font-size:18px; }
+  .stat span { color:var(--muted); font-size:11px; letter-spacing:.12em; text-transform:uppercase; }
+  .taste { margin-top:14px; color:rgba(255,255,255,.72); line-height:1.55; max-height:160px; overflow:auto; font-size:13px; }
+  @media (max-width: 860px) { .hero { grid-template-columns:1fr; } .top { align-items:flex-start; flex-direction:column; } .input { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+  <main class="shell" data-page="radio-home">
+    <header class="top">
+      <div class="brand" id="profileToggle" title="Open Claudio profile">
+        <div class="avatar"><img src="./dj.png" alt="Claudio"></div>
+        <div><h1>opendio</h1><p>Claudio Radio Home</p></div>
+      </div>
+      <nav class="nav">
+        <a class="chip" href="/player">Player Detail</a>
+        <a class="chip" id="musicLink" href="#" target="_blank" rel="noopener">Music</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="panel main">
+        <div class="kicker"><span class="live-dot"></span><span>ON AIR · connected</span></div>
+        <div class="time" id="clock">--:--</div>
+        <div class="date" id="dateLine">Loading radio context…</div>
+        <div class="now">
+          <div class="label">Now Playing</div>
+          <div class="track" id="trackTitle">Loading…</div>
+          <div class="artist" id="trackArtist">Claudio is choosing the first track.</div>
+          <div class="controls">
+            <button id="playBtn">Play</button><button id="pauseBtn">Pause</button><button id="resumeBtn">Resume</button><button id="prevBtn">Prev</button><button id="nextBtn">Next</button><button id="stopBtn">Stop</button>
+          </div>
+        </div>
+        <div class="chat">
+          <div class="label">Claudio Live Reply</div>
+          <div class="reply" id="reply">Tuning the private radio…</div>
+          <form class="input" id="chatForm">
+            <input id="chatInput" autocomplete="off" placeholder="Say something to the DJ..." aria-label="Say something to the DJ">
+            <button type="button" id="micBtn">Mic</button>
+            <button type="submit">Send</button>
+          </form>
+        </div>
+      </div>
+
+      <aside class="panel side">
+        <h2>Queue</h2>
+        <div class="queue" id="queue"></div>
+        <div class="status">
+          <div class="row"><span>BACKEND</span><b id="backend">—</b></div>
+          <div class="row"><span>PLAYER</span><b id="player">—</b></div>
+          <div class="row"><span>LAST ERROR</span><b id="lastError">none</b></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="panel profile" id="profile">
+      <div class="label">Profile / Taste</div>
+      <div class="profile-grid">
+        <div class="stat"><b>ON AIR</b><span>Status</span></div>
+        <div class="stat"><b id="genreStat">AI RADIO</b><span>Genres</span></div>
+        <div class="stat"><b>1</b><span>Listener</span></div>
+        <div class="stat"><b>Claudio</b><span>Identity</span></div>
+      </div>
+      <div class="taste" id="taste">Click Claudio anytime to hide/show this panel.</div>
+    </section>
+  </main>
+<script>
+  let currentState = null;
+  const pendingPlayerActions = new Set();
+  const $ = id => document.getElementById(id);
+  const post = async (url, body = {}) => {
+    const res = await fetch(url, { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body) });
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  };
+  function tickClock() {
+    const now = new Date();
+    $('clock').textContent = now.toLocaleTimeString('zh-CN', { hour:'2-digit', minute:'2-digit' });
+    $('dateLine').textContent = now.toLocaleDateString('zh-CN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  }
+  function render(state) {
+    currentState = state;
+    const track = state.current || {};
+    const player = state.player || {};
+    $('trackTitle').textContent = track.title || track.name || 'No track yet';
+    $('trackArtist').textContent = [track.artist, track.album].filter(Boolean).join(' · ') || '—';
+    $('reply').textContent = state.dj?.say || track.reason || 'Claudio is listening.';
+    $('backend').textContent = track.provider || track.source || player.backend || state.status || 'local';
+    $('player').textContent = `${player.backend || 'browser'} · ${player.status || state.status || 'idle'}`;
+    $('lastError').textContent = player.lastError || 'none';
+    $('musicLink').href = track.jumpUrl || track.url || '#';
+    const playing = player.status === 'playing' || player.status === 'starting';
+    const paused = player.status === 'paused';
+    $('playBtn').disabled = playing || pendingPlayerActions.has('play');
+    $('pauseBtn').disabled = !playing || pendingPlayerActions.has('pause');
+    $('resumeBtn').disabled = !paused || pendingPlayerActions.has('play');
+    $('stopBtn').disabled = (!playing && !paused) || pendingPlayerActions.has('stop');
+    const q = $('queue'); q.textContent = '';
+    for (const item of (state.queue || []).slice(0, 8)) {
+      const div = document.createElement('div'); div.className = 'q';
+      div.innerHTML = `<strong></strong><span></span>`;
+      div.querySelector('strong').textContent = item.title || item.name || 'Untitled';
+      div.querySelector('span').textContent = '';
+      q.appendChild(div);
+    }
+    if (!q.children.length) q.innerHTML = '<div class="q"><strong>Queue warming up</strong><span></span></div>';
+  }
+  async function loadNow() { const res = await fetch('/api/now', { cache:'no-store' }); render(await res.json()); }
+  async function playerAction(name, body = {}) {
+    const lockKey = name === 'resume' ? 'play' : name;
+    if (pendingPlayerActions.has(lockKey)) return;
+    pendingPlayerActions.add(lockKey);
+    if (currentState) render(currentState);
+    try { const data = await post(`/api/player/${name}`, body); render(data.state || data); }
+    finally { pendingPlayerActions.delete(lockKey); if (currentState) render(currentState); }
+  }
+  $('chatForm').addEventListener('submit', async e => { e.preventDefault(); const text = $('chatInput').value.trim(); if (!text) return; $('chatInput').value=''; $('reply').textContent='Claudio is thinking…'; render(await post('/api/chat', { text })); });
+  $('micBtn').addEventListener('click', () => { $('reply').textContent = 'Mic placeholder is ready for a future voice input pass.'; });
+  $('playBtn').addEventListener('click', () => playerAction('play', { speak: false }));
+  $('pauseBtn').addEventListener('click', () => playerAction('pause'));
+  $('resumeBtn').addEventListener('click', () => playerAction('resume'));
+  $('stopBtn').addEventListener('click', () => playerAction('stop'));
+  $('nextBtn').addEventListener('click', () => playerAction('next'));
+  $('prevBtn').addEventListener('click', () => playerAction('prev'));
+  $('profileToggle').addEventListener('click', () => $('profile').classList.toggle('open'));
+  fetch('/api/taste').then(r => r.json()).then(data => { $('taste').textContent = [data.taste, data.routines, data.moodRules].filter(Boolean).join('\n\n').slice(0, 900); }).catch(()=>{});
+  tickClock(); setInterval(tickClock, 1000); loadNow();
+  const es = new EventSource('/stream'); es.addEventListener('state', e => render(JSON.parse(e.data)));
+</script>
+</body>
+</html>

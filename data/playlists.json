@@ -1,0 +1,54 @@
+[
+  {
+    "id": "if-bread",
+    "title": "If",
+    "artist": "Bread",
+    "mood": [
+      "night",
+      "soft",
+      "classic",
+      "writing"
+    ],
+    "reason": "温柔、短、前奏一出来就有深夜感",
+    "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/43/4e/ce/434ecece-62a0-04fc-8898-55e91c5f3e75/mzaf_1137360759286248328.plus.aac.p.m4a"
+  },
+  {
+    "id": "dreams-fleetwood-mac",
+    "title": "Dreams",
+    "artist": "Fleetwood Mac",
+    "mood": [
+      "night",
+      "groove",
+      "classic",
+      "content"
+    ],
+    "reason": "律动轻，适合做内容时当背景",
+    "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/cb/87/29/cb872937-bebb-f309-821e-5459a873f1b6/mzaf_13232595752463797281.plus.aac.p.m4a"
+  },
+  {
+    "id": "fade-into-you",
+    "title": "Fade Into You",
+    "artist": "Mazzy Star",
+    "mood": [
+      "late-night",
+      "dreamy",
+      "soft",
+      "melancholy"
+    ],
+    "reason": "朦胧、慢、很适合夜里收住情绪",
+    "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/4c/db/e8/4cdbe88c-b737-617d-0c1c-35ba36445750/mzaf_4038354414747356567.plus.aac.p.m4a"
+  },
+  {
+    "id": "space-song",
+    "title": "Space Song",
+    "artist": "Beach House",
+    "mood": [
+      "dreamy",
+      "night",
+      "focus",
+      "soft"
+    ],
+    "reason": "合成器铺底很有空间感，适合安静做事",
+    "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/4b/1d/64/4b1d6431-295b-2683-d180-cf3cba4eb943/mzaf_10508096473229016789.plus.aac.p.m4a"
+  }
+]
