@@ -721,7 +721,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Claudio-like Radio MVP listening on http://localhost:${PORT}`);
+  console.log(`opendio listening on http://localhost:${PORT}`);
   plan('启动电台，适合现在的第一首').catch((error) => {
     console.error(`[startup] initial plan failed: ${error.message}`);
   });
